@@ -1,3 +1,10 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const SUPABASE_URL = 'https://oblabtwrbdmrglcwfxgl.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ibGFidHdyYmRtcmdsY3dmeGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTAwNjYsImV4cCI6MjA3MTYyNjA2Nn0.YgB8gRZJ0TiwXWo-I_LgYUdeY-gyy936k70-lm7vUOI'
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
 let isDragging = false;
 let isResizing = false;
 let offsetX, offsetY;
@@ -13,22 +20,29 @@ function openCategory(name) {
   window.location.href = `categorypage.html?name=${encodeURIComponent(name)}`;
 }
 
-function displayEntries(categoryName, sortBy = "newest") {
+// *** UPDATED: Now gets thoughts from Supabase ***
+async function displayEntries(categoryName, sortBy = "newest") {
   const entryList = document.getElementById("entry-list");
   entryList.innerHTML = "";
-
-  const savedEntries = JSON.parse(localStorage.getItem(categoryName)) || [];
   
-  let sortedEntries;
-  if (sortBy === "oldest") {
-    // Sort by oldest: slice the start of the array
-    sortedEntries = savedEntries.slice(0, POSTS_TO_SHOW);
-  } else {
-    // Default to newest: slice the end of the array and reverse it
-    sortedEntries = savedEntries.slice(-POSTS_TO_SHOW).reverse();
+  const { data: thoughts, error } = await supabase
+    .from('thoughts')
+    .select('*')
+    .eq('category', categoryName) // Fetch only thoughts for the current category
+
+  if (error) {
+    console.error('Error fetching thoughts:', error);
+    return;
   }
   
-  sortedEntries.forEach(entry => {
+  let sortedEntries = thoughts;
+  if (sortBy === "oldest") {
+      sortedEntries.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  } else {
+      sortedEntries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  }
+  
+  sortedEntries.slice(0, POSTS_TO_SHOW).forEach(entry => {
     displayEntry(entry.title, entry.text);
   });
 }
@@ -54,22 +68,18 @@ document.addEventListener("DOMContentLoaded", () => {
     title.textContent = categoryName;
     content.innerHTML = `<p>Welcome to the ${categoryName} category. Here you can explore and share amazing ideas.</p>`;
 
-    // Load and display saved entries, with a limit and default sort
     displayEntries(categoryName, currentSortBy);
 
-    // Handle pasting plain text
     textInput.addEventListener("paste", (event) => {
         event.preventDefault();
         const text = event.clipboardData.getData("text/plain");
         document.execCommand("insertHTML", false, text);
     });
 
-    // Show the upload window when the button is clicked
     addThoughtBtn.addEventListener("click", () => {
         uploadSection.style.display = "flex";
     });
 
-    // Draggable functionality
     dragHandle.addEventListener("mousedown", (e) => {
       e.preventDefault();
       isDragging = true;
@@ -90,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
       uploadSection.style.cursor = "default";
     });
 
-    // Resizable functionality
     resizeHandle.addEventListener("mousedown", (e) => {
       e.preventDefault();
       isResizing = true;
@@ -121,24 +130,20 @@ document.addEventListener("DOMContentLoaded", () => {
       isResizing = false;
     });
 
-    // Close button functionality
     closeBtn.addEventListener("click", () => {
       uploadSection.style.display = "none";
     });
 
-    // Toggle sort dropdown on button click
     sortBtn.addEventListener("click", () => {
         sortDropdown.classList.toggle("active");
     });
     
-    // Hide dropdown when clicking outside
     document.addEventListener("click", (e) => {
       if (!sortBtn.contains(e.target) && !sortDropdown.contains(e.target)) {
-          sortDropdown.classList.remove("active");
+        sortDropdown.classList.remove("active");
       }
     });
 
-    // Handle sort option clicks
     sortOptions.forEach(option => {
       option.addEventListener("click", (e) => {
         currentSortBy = e.target.dataset.sortBy;
@@ -150,8 +155,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Function to add new entry
-function addEntry() {
+// *** UPDATED: Now saves to Supabase ***
+async function addEntry() {
   const params = new URLSearchParams(window.location.search);
   const categoryName = params.get("name");
   const titleInput = document.getElementById("entry-title");
@@ -165,11 +170,19 @@ function addEntry() {
     alert("Please enter both a title and content.");
     return;
   }
+  
+  const { data, error } = await supabase
+    .from('thoughts')
+    .insert([
+      { category: categoryName, title: entryTitle, text: entryText },
+    ])
+    .select()
 
-  const newEntry = { title: entryTitle, text: entryText };
-  const savedEntries = JSON.parse(localStorage.getItem(categoryName)) || [];
-  savedEntries.push(newEntry);
-  localStorage.setItem(categoryName, JSON.stringify(savedEntries));
+  if (error) {
+    console.error('Error adding entry:', error);
+    alert('There was an error saving your thought. Please try again.');
+    return;
+  }
 
   // Redisplay all entries after adding a new one
   displayEntries(categoryName, currentSortBy);
@@ -179,18 +192,26 @@ function addEntry() {
   uploadSection.style.display = "none";
 }
 
-// Function to delete an entry
-function deleteEntry(categoryName, entryTitle, entryText) {
+// *** UPDATED: Now deletes from Supabase ***
+async function deleteEntry(categoryName, entryTitle, entryText) {
   if (confirm("Are you sure you want to delete this thought?")) {
-    const savedEntries = JSON.parse(localStorage.getItem(categoryName)) || [];
-    const updatedEntries = savedEntries.filter(entry => entry.title !== entryTitle || entry.text !== entryText);
-    localStorage.setItem(categoryName, JSON.stringify(updatedEntries));
+    const { error } = await supabase
+      .from('thoughts')
+      .delete()
+      .eq('category', categoryName)
+      .eq('title', entryTitle)
+
+    if (error) {
+      console.error('Error deleting entry:', error);
+      alert('There was an error deleting your thought. Please try again.');
+      return;
+    }
+    
     displayEntries(categoryName, currentSortBy);
   }
 }
 
-
-// Function to display an entry
+// Function to display an entry (no change)
 function displayEntry(title, text) {
   const entryList = document.getElementById("entry-list");
   const entryDiv = document.createElement("div");
