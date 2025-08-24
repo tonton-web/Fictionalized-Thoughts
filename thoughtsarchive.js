@@ -1,10 +1,16 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-const SUPABASE_URL = 'https://oblabtwrbdmrglcwfxgl.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ibGFidHdyYmRtcmdsY3dmeGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTAwNjYsImV4cCI6MjA3MTYyNjA2Nn0.YgB8gRZJ0TiwXWo-I_LgYUdeY-gyy936k70-lm7vUOI'
+const SUPABASE_URL = 'YOUR_SUPABASE_URL'
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+// This function now lives outside the event listener to be used on index.html
+function openCategory(name) {
+  window.location.href = `categorypage.html?name=${encodeURIComponent(name)}`;
+}
+
+// All other functions for categorypage.html are inside the listener
 let isDragging = false;
 let isResizing = false;
 let offsetX, offsetY;
@@ -15,10 +21,6 @@ let currentSortBy = "newest";
 const MIN_WIDTH = 300;
 const MIN_HEIGHT = 300;
 const POSTS_TO_SHOW = 50;
-
-function openCategory(name) {
-  window.location.href = `categorypage.html?name=${encodeURIComponent(name)}`;
-}
 
 // *** UPDATED: Now gets thoughts from Supabase ***
 async function displayEntries(categoryName, sortBy = "newest") {
@@ -37,7 +39,7 @@ async function displayEntries(categoryName, sortBy = "newest") {
   
   let sortedEntries = thoughts;
   if (sortBy === "oldest") {
-      sortedEntries.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      sortedEntries.sort((a, b) => new Date(a.created_at) - new Date(b.created.at));
   } else {
       sortedEntries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   }
@@ -242,10 +244,6 @@ function displayEntry(title, text) {
     const categoryName = params.get("name");
     deleteEntry(categoryName, title, text);
   });
-
-  entryDiv.appendChild(readMoreBtn);
-  entryDiv.appendChild(collapseBtn);
-  entryDiv.appendChild(deleteBtn);
 
   entryList.prepend(entryDiv);
 }
