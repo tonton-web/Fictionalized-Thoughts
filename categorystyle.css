@@ -219,7 +219,7 @@ body {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 
 .upload-fields input[type="text"] {
@@ -295,4 +295,5 @@ footer {
   text-align: center;
   padding: 20px 40px;
   margin-top: auto;
+
 }
