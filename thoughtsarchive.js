@@ -248,3 +248,14 @@ function displayEntry(title, text) {
   entryList.prepend(entryDiv);
 }
 
+// Add this code to the bottom of the thoughtsarchive.js file
+
+document.addEventListener("DOMContentLoaded", () => {
+  const categoryElements = document.querySelectorAll(".category");
+  categoryElements.forEach(category => {
+    category.addEventListener("click", () => {
+      const categoryName = category.querySelector("span").textContent;
+      openCategory(categoryName);
+    });
+  });
+});
