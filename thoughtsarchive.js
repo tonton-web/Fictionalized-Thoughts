@@ -1,48 +1,9 @@
-const SUPABASE_URL = 'https://oblabtwrbdmrglcwfxgl.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ibGFidHdyYmRtcmdsY3dmeGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTAwNjYsImV4cCI6MjA3MTYyNjA2Nn0.YgB8gRZJ0TiwXWo-I_LgYUdeY-gyy936k70-lm7vUOI'
-
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+// Handles category navigation
 function openCategory(name) {
   window.location.href = `categorypage.html?name=${encodeURIComponent(name)}`;
 }
 
-let isDragging = false;
-let isResizing = false;
-let offsetX, offsetY;
-let initialWidth, initialHeight;
-let initialX, initialY;
-const MIN_WIDTH = 300;
-const MIN_HEIGHT = 300;
-let currentSortBy = "newest";
-
-async function displayEntries(categoryName, sortBy = "newest") {
-  const entryList = document.getElementById("entry-list");
-  if (!entryList) return;
-  entryList.innerHTML = "";
-  
-  const { data: thoughts, error } = await supabaseClient
-    .from('thoughts')
-    .select('*')
-    .eq('category', categoryName);
-
-  if (error) {
-    console.error('Error fetching thoughts:', error);
-    return;
-  }
-  
-  let sortedEntries = thoughts;
-  if (sortBy === "oldest") {
-      sortedEntries.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-  } else {
-      sortedEntries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  }
-  
-  sortedEntries.forEach(entry => {
-    displayEntry(entry.title, entry.text);
-  });
-}
-
+// Code for category page content
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const categoryName = params.get("name");
@@ -50,213 +11,83 @@ document.addEventListener("DOMContentLoaded", () => {
   if (categoryName) {
     const title = document.getElementById("category-title");
     const content = document.getElementById("category-content");
-    const uploadSection = document.getElementById("upload-section");
-    const addThoughtBtn = document.getElementById("add-thought-btn");
-    const closeBtn = document.querySelector(".close-btn");
-    const dragHandle = document.querySelector("#upload-header");
-    const resizeHandle = document.querySelector(".resize-handle");
-    const textInput = document.getElementById("entry-text");
-    const sortBtn = document.getElementById("sort-btn");
-    const sortDropdown = document.getElementById("sort-dropdown");
-    const sortOptions = document.querySelectorAll(".sort-option");
+    const entryList = document.getElementById("entry-list");
 
     if (title) title.textContent = categoryName;
-    if (content) content.innerHTML = `<p>Welcome to the ${categoryName} category. Here you can explore and share amazing ideas.</p>`;
-    
-    displayEntries(categoryName, currentSortBy);
-    
-    // Paste functionality
-    if (textInput) {
-        textInput.addEventListener("paste", (event) => {
-            event.preventDefault();
-            const text = event.clipboardData.getData("text/plain");
-            document.execCommand("insertHTML", false, text);
-        });
-    }
+    if (content) content.innerHTML = `<p>Welcome to the ${categoryName} category. Share your thoughts!</p>`;
 
-    if (addThoughtBtn) {
-        addThoughtBtn.addEventListener("click", () => {
-            if (uploadSection) uploadSection.style.display = "flex";
-        });
-    }
-
-    if (closeBtn) {
-        closeBtn.addEventListener("click", () => {
-            if (uploadSection) uploadSection.style.display = "none";
-        });
-    }
-    
-    // Drag functionality
-    if (dragHandle && uploadSection) {
-        dragHandle.addEventListener("mousedown", (e) => {
-          e.preventDefault();
-          isDragging = true;
-          offsetX = e.clientX - uploadSection.offsetLeft;
-          offsetY = e.clientY - uploadSection.offsetTop;
-          uploadSection.style.cursor = "grabbing";
-        });
-    }
-
-    // Resize functionality
-    if (resizeHandle && uploadSection) {
-        resizeHandle.addEventListener("mousedown", (e) => {
-          e.preventDefault();
-          isResizing = true;
-          e.stopPropagation();
-          initialWidth = uploadSection.offsetWidth;
-          initialHeight = uploadSection.offsetHeight;
-          initialX = e.clientX;
-          initialY = e.clientY;
-        });
-    }
-
-    document.addEventListener("mousemove", (e) => {
-      if (isDragging && uploadSection) {
-        uploadSection.style.left = (e.clientX - offsetX) + "px";
-        uploadSection.style.top = (e.clientY - offsetY) + "px";
-      }
-      if (isResizing && uploadSection) {
-        const deltaX = e.clientX - initialX;
-        const deltaY = e.clientY - initialY;
-        const newWidth = initialWidth + deltaX;
-        const newHeight = initialHeight + deltaY;
-        if (newWidth >= MIN_WIDTH) {
-          uploadSection.style.width = newWidth + "px";
-        }
-        if (newHeight >= MIN_HEIGHT) {
-          uploadSection.style.height = newHeight + "px";
-        }
-      }
+    // Load saved entries
+    const savedEntries = JSON.parse(localStorage.getItem(categoryName)) || [];
+    savedEntries.forEach(entry => {
+      displayEntry(entry.title, entry.text, entry.user, entry.avatar);
     });
-
-    document.addEventListener("mouseup", () => {
-      isDragging = false;
-      isResizing = false;
-      if (uploadSection) uploadSection.style.cursor = "default";
-    });
-
-    // Post entry button
-    const postBtn = document.getElementById("post-entry-btn");
-    if (postBtn) {
-        postBtn.addEventListener('click', addEntry);
-    }
-    
-    // Sort functionality
-    if (sortBtn && sortDropdown && sortOptions) {
-        sortBtn.addEventListener("click", () => {
-            sortDropdown.classList.toggle("active");
-        });
-        
-        document.addEventListener("click", (e) => {
-          if (!sortBtn.contains(e.target) && !sortDropdown.contains(e.target)) {
-            sortDropdown.classList.remove("active");
-          }
-        });
-
-        sortOptions.forEach(option => {
-          option.addEventListener("click", (e) => {
-            currentSortBy = e.target.dataset.sortBy;
-            sortBtn.textContent = `Sort By: ${e.target.textContent}`;
-            displayEntries(categoryName, currentSortBy);
-            sortDropdown.classList.remove("active");
-          });
-        });
-    }
   }
 });
 
-async function addEntry() {
+// Add new entry
+function addEntry() {
   const params = new URLSearchParams(window.location.search);
   const categoryName = params.get("name");
+
   const titleInput = document.getElementById("entry-title");
   const textInput = document.getElementById("entry-text");
-  const uploadSection = document.getElementById("upload-section");
+  const userInput = document.getElementById("entry-user");
+  const avatarInput = document.getElementById("entry-avatar");
 
   const entryTitle = titleInput.value.trim();
-  const entryText = textInput.innerHTML.trim();
+  const entryText = textInput.innerHTML.trim(); // capture HTML for formatting
+  const entryUser = userInput.value.trim() || "Anonymous";
+  const entryAvatar = avatarInput.value.trim() || "https://via.placeholder.com/40";
 
   if (!entryTitle || !entryText) {
     alert("Please enter both a title and content.");
     return;
   }
-  
-  const { data, error } = await supabaseClient
-    .from('thoughts')
-    .insert([
-      { category: categoryName, title: entryTitle, text: entryText },
-    ])
-    .select();
 
-  if (error) {
-    console.error('Error adding entry:', error);
-    alert('There was an error saving your thought. Please try again.');
-    return;
-  }
+  const newEntry = { title: entryTitle, text: entryText, user: entryUser, avatar: entryAvatar };
+  const savedEntries = JSON.parse(localStorage.getItem(categoryName)) || [];
+  savedEntries.push(newEntry);
+  localStorage.setItem(categoryName, JSON.stringify(savedEntries));
 
-  displayEntries(categoryName, currentSortBy);
+  displayEntry(entryTitle, entryText, entryUser, entryAvatar);
 
   titleInput.value = "";
   textInput.innerHTML = "";
-  if (uploadSection) uploadSection.style.display = "none";
+  userInput.value = "";
+  avatarInput.value = "";
 }
 
-async function deleteEntry(categoryName, entryTitle, entryText) {
-  if (confirm("Are you sure you want to delete this thought?")) {
-    const { error } = await supabaseClient
-      .from('thoughts')
-      .delete()
-      .eq('category', categoryName)
-      .eq('title', entryTitle);
-
-    if (error) {
-      console.error('Error deleting entry:', error);
-      alert('There was an error deleting your thought. Please try again.');
-      return;
-    }
-    
-    displayEntries(categoryName, currentSortBy);
-  }
-}
-
-function displayEntry(title, text) {
+// Display entry
+function displayEntry(title, text, user, avatar) {
   const entryList = document.getElementById("entry-list");
-  if (!entryList) return;
-
   const entryDiv = document.createElement("div");
   entryDiv.classList.add("entry");
-  
-  const formattedText = text.replace(/\n/g, "<br>");
-  entryDiv.innerHTML = `<h4>${title}</h4><p>${formattedText}</p>`;
 
-  const readMoreBtn = document.createElement("button");
-  readMoreBtn.textContent = "Read More";
-  readMoreBtn.classList.add("read-more-btn");
-  readMoreBtn.addEventListener("click", () => {
-    entryDiv.classList.add("expanded");
-  });
+  // Collapsible post
+  const previewLength = 200;
+  const isLong = text.length > previewLength;
+  const previewText = isLong ? text.substring(0, previewLength) + "..." : text;
 
-  const collapseBtn = document.createElement("button");
-  collapseBtn.textContent = "Collapse";
-  collapseBtn.classList.add("collapse-btn");
-  collapseBtn.addEventListener("click", () => {
-    entryDiv.classList.remove("expanded");
-  });
+  entryDiv.innerHTML = `
+    <div class="entry-header">
+      <img src="${avatar}" alt="avatar" class="avatar">
+      <span class="user-name">${user}</span>
+    </div>
+    <h4>${title}</h4>
+    <p class="entry-text">${previewText}</p>
+    ${isLong ? '<button class="toggle-btn">Read More</button>' : ""}
+  `;
 
-  const deleteBtn = document.createElement("button");
-  deleteBtn.textContent = "Delete";
-  deleteBtn.classList.add("delete-btn");
-  deleteBtn.addEventListener("click", () => {
-    const params = new URLSearchParams(window.location.search);
-    const categoryName = params.get("name");
-    deleteEntry(categoryName, title, text);
-  });
-  
-  const buttonContainer = document.createElement("div");
-  buttonContainer.classList.add("entry-buttons");
-  buttonContainer.appendChild(readMoreBtn);
-  buttonContainer.appendChild(collapseBtn);
-  buttonContainer.appendChild(deleteBtn);
-  entryDiv.appendChild(buttonContainer);
+  if (isLong) {
+    const btn = entryDiv.querySelector(".toggle-btn");
+    const textEl = entryDiv.querySelector(".entry-text");
+    let expanded = false;
+    btn.addEventListener("click", () => {
+      expanded = !expanded;
+      textEl.innerHTML = expanded ? text : previewText;
+      btn.textContent = expanded ? "Show Less" : "Read More";
+    });
+  }
 
   entryList.prepend(entryDiv);
 }
