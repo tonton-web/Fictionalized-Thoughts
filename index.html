@@ -1,51 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Thought Archive</title>
-    <link rel="stylesheet" href="thoughtsarchive.css">
+  <meta charset="UTF-8">
+  <title>Thoughts Archive</title>
+  <link rel="stylesheet" href="thoughtsarchive.css">
 </head>
 <body>
-    <header>
-        <h1>Fictionalized Thoughts</h1>
-        <p>Explore and Share Amazing Ideas: Where Facts and Real life Experiences Turn Into an Amazing Fiction Stories</p>
-    </header>
+  <header>
+    <h1>Thoughts Archive</h1>
+  </header>
 
-    <main>
-        <div class="grid-container">
-            <div class="category" onclick="openCategory('Science')">
-                <img src="Science.png" alt="Science">
-                <span>Science</span>
-            </div>
-            <div class="category" onclick="openCategory('Futuristic')">
-                <img src="Futuristic.png" alt="Futuristic">
-                <span>Futuristic</span>
-            </div>
-            <div class="category" onclick="openCategory('History')">
-                <img src="History.png" alt="History">
-                <span>History</span>
-            </div>
-            <div class="category" onclick="openCategory('Philosophy')">
-                <img src="Philosophy.png" alt="Philosophy">
-                <span>Philosophy</span>
-            </div>
-            <div class="category" onclick="openCategory('Supernatural')">
-                <img src="Supernatural.png" alt="Supernatural">
-                <span>Supernatural</span>
-            </div>
-            <div class="category" onclick="openCategory('Entertainment')">
-                <img src="Entertainment.png" alt="Entertainment">
-                <span>Entertainment</span>
-            </div>
-        </div>
-    </main>
+  <main>
+    <section id="categories">
+      <h2>Categories</h2>
+      <ul>
+        <li><a href="categorypage.html?name=The%20Clap%20of%20Worlds">The Clap of Worlds</a></li>
+        <li><a href="categorypage.html?name=The%20Last%20Dawn">The Last Dawn</a></li>
+      </ul>
+    </section>
+  </main>
 
-    <footer>
-        <p>© 2025 The Thought Archive</p>
-    </footer>
-
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="thoughtsarchive.js"></script>
+  <script src="thoughtsarchive.js"></script>
 </body>
 </html>
