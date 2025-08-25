@@ -56,6 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const dragHandle = document.querySelector("#upload-header");
     const resizeHandle = document.querySelector(".resize-handle");
     const textInput = document.getElementById("entry-text");
+    const sortBtn = document.getElementById("sort-btn");
+    const sortDropdown = document.getElementById("sort-dropdown");
+    const sortOptions = document.querySelectorAll(".sort-option");
 
     if (title) title.textContent = categoryName;
     if (content) content.innerHTML = `<p>Welcome to the ${categoryName} category. Here you can explore and share amazing ideas.</p>`;
@@ -136,6 +139,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const postBtn = document.getElementById("post-entry-btn");
     if (postBtn) {
         postBtn.addEventListener('click', addEntry);
+    }
+    
+    // Sort functionality
+    if (sortBtn && sortDropdown && sortOptions) {
+        sortBtn.addEventListener("click", () => {
+            sortDropdown.classList.toggle("active");
+        });
+        
+        document.addEventListener("click", (e) => {
+          if (!sortBtn.contains(e.target) && !sortDropdown.contains(e.target)) {
+            sortDropdown.classList.remove("active");
+          }
+        });
+
+        sortOptions.forEach(option => {
+          option.addEventListener("click", (e) => {
+            currentSortBy = e.target.dataset.sortBy;
+            sortBtn.textContent = `Sort By: ${e.target.textContent}`;
+            displayEntries(categoryName, currentSortBy);
+            sortDropdown.classList.remove("active");
+          });
+        });
     }
   }
 });
