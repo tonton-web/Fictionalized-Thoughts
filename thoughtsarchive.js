@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // Drag functionality
-    if (dragHandle) {
+    if (dragHandle && uploadSection) {
         dragHandle.addEventListener("mousedown", (e) => {
           e.preventDefault();
           isDragging = true;
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Resize functionality
-    if (resizeHandle) {
+    if (resizeHandle && uploadSection) {
         resizeHandle.addEventListener("mousedown", (e) => {
           e.preventDefault();
           isResizing = true;
@@ -111,11 +111,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.addEventListener("mousemove", (e) => {
-      if (isDragging) {
+      if (isDragging && uploadSection) {
         uploadSection.style.left = (e.clientX - offsetX) + "px";
         uploadSection.style.top = (e.clientY - offsetY) + "px";
       }
-      if (isResizing) {
+      if (isResizing && uploadSection) {
         const deltaX = e.clientX - initialX;
         const deltaY = e.clientY - initialY;
         const newWidth = initialWidth + deltaX;
