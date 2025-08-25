@@ -1,8 +1,7 @@
 const SUPABASE_URL = 'https://oblabtwrbdmrglcwfxgl.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ibGFidHdyYmRtcmdsY3dmeGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTAwNjYsImV4cCI6MjA3MTYyNjA2Nn0.YgB8gRZJ0TiwXWo-I_LgYUdeY-gyy936k70-lm7vUOI'
 
-const { createClient } = supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // This function now lives outside the event listener to be used on index.html
 function openCategory(name) {
@@ -38,7 +37,7 @@ async function displayEntries(categoryName, sortBy = "newest") {
 
   let sortedEntries = thoughts;
   if (sortBy === "oldest") {
-      sortedEntries.sort((a, b) => new Date(a.created_at) - new Date(b.created.at));
+      sortedEntries.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
   } else {
       sortedEntries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   }
