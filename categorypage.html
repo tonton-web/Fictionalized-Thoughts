@@ -14,16 +14,16 @@
     </header>
 
     <main id="category-page">
-        <h2 id="category-title"></h2>
-        <p>Welcome to the <span id="category-name-text"></span> category. Here you can explore and share amazing ideas.</p>
-        
-        <div class="controls-container">
-            <button id="sort-btn">Sort By: Newest</button>
-            <div id="sort-dropdown" class="sort-dropdown">
-                <a href="#" class="sort-option" data-sort-by="newest">Newest First</a>
-                <a href="#" class="sort-option" data-sort-by="oldest">Oldest First</a>
+        <div class="category-header">
+            <h2 id="category-title"></h2>
+            <p>Welcome to the <span id="category-name-text"></span> category. Here you can explore and share amazing ideas.</p>
+            <div class="sort-container">
+                <button id="sort-btn">Sort By: Newest</button>
+                <div id="sort-dropdown" class="sort-dropdown">
+                    <a href="#" class="sort-option" data-sort-by="newest">Newest First</a>
+                    <a href="#" class="sort-option" data-sort-by="oldest">Oldest First</a>
+                </div>
             </div>
-            <button id="add-thought-btn">+</button>
         </div>
         
         <div id="entry-list"></div>
@@ -40,7 +40,8 @@
             </div>
             <div class="resize-handle"></div>
         </div>
-        
+
+        <button id="add-thought-btn">+</button>
         <a href="index.html" class="back-to-homepage-btn">Back to Homepage</a>
     </main>
 
