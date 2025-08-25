@@ -1,9 +1,8 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
 const SUPABASE_URL = 'https://oblabtwrbdmrglcwfxgl.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ibGFidHdyYmRtcmdsY3dmeGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTAwNjYsImV4cCI6MjA3MTYyNjA2Nn0.YgB8gRZJ0TiwXWo-I_LgYUdeY-gyy936k70-lm7vUOI'
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // This function now lives outside the event listener to be used on index.html
 function openCategory(name) {
@@ -26,8 +25,8 @@ const POSTS_TO_SHOW = 50;
 async function displayEntries(categoryName, sortBy = "newest") {
   const entryList = document.getElementById("entry-list");
   entryList.innerHTML = "";
-  
-  const { data: thoughts, error } = await supabase
+
+  const { data: thoughts, error } = await supabaseClient
     .from('thoughts')
     .select('*')
     .eq('category', categoryName) // Fetch only thoughts for the current category
@@ -36,14 +35,14 @@ async function displayEntries(categoryName, sortBy = "newest") {
     console.error('Error fetching thoughts:', error);
     return;
   }
-  
+
   let sortedEntries = thoughts;
   if (sortBy === "oldest") {
       sortedEntries.sort((a, b) => new Date(a.created_at) - new Date(b.created.at));
   } else {
       sortedEntries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   }
-  
+
   sortedEntries.slice(0, POSTS_TO_SHOW).forEach(entry => {
     displayEntry(entry.title, entry.text);
   });
@@ -139,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sortBtn.addEventListener("click", () => {
         sortDropdown.classList.toggle("active");
     });
-    
+
     document.addEventListener("click", (e) => {
       if (!sortBtn.contains(e.target) && !sortDropdown.contains(e.target)) {
         sortDropdown.classList.remove("active");
@@ -172,8 +171,8 @@ async function addEntry() {
     alert("Please enter both a title and content.");
     return;
   }
-  
-  const { data, error } = await supabase
+
+  const { data, error } = await supabaseClient
     .from('thoughts')
     .insert([
       { category: categoryName, title: entryTitle, text: entryText },
@@ -197,7 +196,7 @@ async function addEntry() {
 // *** UPDATED: Now deletes from Supabase ***
 async function deleteEntry(categoryName, entryTitle, entryText) {
   if (confirm("Are you sure you want to delete this thought?")) {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('thoughts')
       .delete()
       .eq('category', categoryName)
@@ -208,7 +207,7 @@ async function deleteEntry(categoryName, entryTitle, entryText) {
       alert('There was an error deleting your thought. Please try again.');
       return;
     }
-    
+
     displayEntries(categoryName, currentSortBy);
   }
 }
@@ -247,15 +246,3 @@ function displayEntry(title, text) {
 
   entryList.prepend(entryDiv);
 }
-
-// Add this code to the bottom of the thoughtsarchive.js file
-
-document.addEventListener("DOMContentLoaded", () => {
-  const categoryElements = document.querySelectorAll(".category");
-  categoryElements.forEach(category => {
-    category.addEventListener("click", () => {
-      const categoryName = category.querySelector("span").textContent;
-      openCategory(categoryName);
-    });
-  });
-});
