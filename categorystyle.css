@@ -177,8 +177,8 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 500px; 
-  height: auto;
+  width: 500px;
+  max-height: 80vh; /* This is the new, important line */
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -188,6 +188,7 @@ body {
   border: 1px solid #ccc;
   min-width: 300px;
   min-height: 300px;
+  overflow: hidden; /* Added to contain the content */
 }
 
 #upload-header {
@@ -219,7 +220,7 @@ body {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  overflow-y: auto;
+  overflow-y: auto; /* This makes the content scrollable */
 }
 
 .upload-fields input[type="text"] {
@@ -295,5 +296,4 @@ footer {
   text-align: center;
   padding: 20px 40px;
   margin-top: auto;
-
 }
