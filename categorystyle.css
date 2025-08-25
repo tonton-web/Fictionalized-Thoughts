@@ -277,7 +277,7 @@ body {
 .back-btn {
   margin: 20px auto;
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: 50px;
   border: none;
   border-radius: 8px;
   background-color: #007bff;
@@ -297,3 +297,4 @@ footer {
   padding: 20px 40px;
   margin-top: auto;
 }
+
