@@ -17,6 +17,7 @@
         <h2 id="category-title"></h2>
         <div id="category-content"></div>
         
+        <button id="add-thought-btn">+</button>
         <div id="entry-list"></div>
 
         <div id="upload-section" class="upload-container">
@@ -27,11 +28,10 @@
             <div class="upload-content">
                 <input type="text" id="entry-title" placeholder="Enter title">
                 <div id="entry-text" contenteditable="true" placeholder="Enter your thought here"></div>
-                <button onclick="addEntry()">Post Entry</button>
+                <button id="post-entry-btn">Post Entry</button>
             </div>
+            <div class="resize-handle"></div>
         </div>
-        
-        <button id="add-thought-btn">+</button>
     </main>
 
     <footer>
@@ -42,4 +42,3 @@
     <script src="thoughtsarchive.js"></script>
 </body>
 </html>
-
