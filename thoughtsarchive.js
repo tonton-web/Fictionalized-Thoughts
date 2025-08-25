@@ -14,7 +14,6 @@ let initialWidth, initialHeight;
 let initialX, initialY;
 const MIN_WIDTH = 300;
 const MIN_HEIGHT = 300;
-
 let currentSortBy = "newest";
 
 async function displayEntries(categoryName, sortBy = "newest") {
@@ -56,11 +55,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeBtn = document.querySelector(".close-btn");
     const dragHandle = document.querySelector("#upload-header");
     const resizeHandle = document.querySelector(".resize-handle");
+    const textInput = document.getElementById("entry-text");
 
     if (title) title.textContent = categoryName;
     if (content) content.innerHTML = `<p>Welcome to the ${categoryName} category. Here you can explore and share amazing ideas.</p>`;
     
     displayEntries(categoryName, currentSortBy);
+    
+    // Paste functionality
+    if (textInput) {
+        textInput.addEventListener("paste", (event) => {
+            event.preventDefault();
+            const text = event.clipboardData.getData("text/plain");
+            document.execCommand("insertHTML", false, text);
+        });
+    }
 
     if (addThoughtBtn) {
         addThoughtBtn.addEventListener("click", () => {
@@ -190,9 +199,23 @@ function displayEntry(title, text) {
 
   const entryDiv = document.createElement("div");
   entryDiv.classList.add("entry");
-
+  
   const formattedText = text.replace(/\n/g, "<br>");
   entryDiv.innerHTML = `<h4>${title}</h4><p>${formattedText}</p>`;
+
+  const readMoreBtn = document.createElement("button");
+  readMoreBtn.textContent = "Read More";
+  readMoreBtn.classList.add("read-more-btn");
+  readMoreBtn.addEventListener("click", () => {
+    entryDiv.classList.add("expanded");
+  });
+
+  const collapseBtn = document.createElement("button");
+  collapseBtn.textContent = "Collapse";
+  collapseBtn.classList.add("collapse-btn");
+  collapseBtn.addEventListener("click", () => {
+    entryDiv.classList.remove("expanded");
+  });
 
   const deleteBtn = document.createElement("button");
   deleteBtn.textContent = "Delete";
@@ -202,7 +225,13 @@ function displayEntry(title, text) {
     const categoryName = params.get("name");
     deleteEntry(categoryName, title, text);
   });
+  
+  const buttonContainer = document.createElement("div");
+  buttonContainer.classList.add("entry-buttons");
+  buttonContainer.appendChild(readMoreBtn);
+  buttonContainer.appendChild(collapseBtn);
+  buttonContainer.appendChild(deleteBtn);
+  entryDiv.appendChild(buttonContainer);
 
-  entryDiv.appendChild(deleteBtn);
   entryList.prepend(entryDiv);
 }
