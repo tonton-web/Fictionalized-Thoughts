@@ -1,48 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Category - The Thought Archive</title>
-  <link rel="stylesheet" href="categorystyle.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thoughts Archive - Category</title>
+    <link rel="stylesheet" href="thoughtsarchive.css">
 </head>
 <body>
-  <div class="header-container">
-    <h1 id="category-title"></h1>
-    <div class="sort-container">
-      <button id="sort-btn">Sort By: Newest</button>
-      <div id="sort-dropdown" class="sort-dropdown">
-        <div class="sort-option" data-sort-by="newest">Newest Post</div>
-        <div class="sort-option" data-sort-by="oldest">Oldest Post</div>
-      </div>
-    </div>
-  </div>
-  <div id="category-content"></div>
+    <header>
+        <h1>Fictionalized Thoughts</h1>
+        <p>Explore and Share Amazing Ideas</p>
+    </header>
 
-  <div id="entry-list"></div>
+    <main id="category-page">
+        <h2 id="category-title"></h2>
+        <div id="category-content"></div>
+        
+        <div id="entry-list"></div>
 
-  <div id="add-thought-btn">+</div>
+        <div id="upload-section" class="upload-container">
+            <div class="upload-header" id="upload-header">
+                <h3>Add a New Thought</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="upload-content">
+                <input type="text" id="entry-title" placeholder="Enter title">
+                <div id="entry-text" contenteditable="true" placeholder="Enter your thought here"></div>
+                <button onclick="addEntry()">Post Entry</button>
+            </div>
+        </div>
+        
+        <button id="add-thought-btn">+</button>
+    </main>
 
-  <div id="upload-section">
-    <div id="upload-header" class="drag-handle">
-      <h3>Add Your Thought</h3>
-      <span class="close-btn">&times;</span>
-    </div>
+    <footer>
+        <p>&copy; 2025 The Thought Archive</p>
+    </footer>
 
-    <div class="upload-fields">
-      <input type="text" id="entry-title" placeholder="Title">
-      <div id="entry-text" contenteditable="true" class="rich-editor" placeholder="Write your thought here..."></div>
-      <button onclick="addEntry()">Post Entry</button>
-    </div>
-    <div class="resize-handle"></div>
-  </div>
-
-  <button onclick="window.location.href='index.html'" class="back-btn">Back to Homepage</button>
-
-  <footer>
-    <p>© 2025 The Thought Archive</p>
-  </footer>
-
-  <script src="thoughtsarchive.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="thoughtsarchive.js"></script>
 </body>
 </html>
