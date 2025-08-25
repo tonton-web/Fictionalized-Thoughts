@@ -17,7 +17,15 @@
         <h2 id="category-title"></h2>
         <div id="category-content"></div>
         
-        <button id="add-thought-btn">+</button>
+        <div class="controls-container">
+            <button id="sort-btn">Sort By: Newest</button>
+            <div id="sort-dropdown" class="sort-dropdown">
+                <a href="#" class="sort-option" data-sort-by="newest">Newest First</a>
+                <a href="#" class="sort-option" data-sort-by="oldest">Oldest First</a>
+            </div>
+            <button id="add-thought-btn">+</button>
+        </div>
+        
         <div id="entry-list"></div>
 
         <div id="upload-section" class="upload-container">
