@@ -275,7 +275,6 @@ body {
 }
 
 .back-btn {
-  grid row: 1, 2;
   margin: 20px auto;
   padding: 10px 20px;
   font-size: 16px;
@@ -298,5 +297,6 @@ footer {
   padding: 20px 40px;
   margin-top: auto;
 }
+
 
 
