@@ -7,10 +7,19 @@ function openCategory(name) {
   window.location.href = `categorypage.html?name=${encodeURIComponent(name)}`;
 }
 
+let isDragging = false;
+let isResizing = false;
+let offsetX, offsetY;
+let initialWidth, initialHeight;
+let initialX, initialY;
+const MIN_WIDTH = 300;
+const MIN_HEIGHT = 300;
+
 let currentSortBy = "newest";
 
 async function displayEntries(categoryName, sortBy = "newest") {
   const entryList = document.getElementById("entry-list");
+  if (!entryList) return;
   entryList.innerHTML = "";
   
   const { data: thoughts, error } = await supabaseClient
@@ -45,6 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const uploadSection = document.getElementById("upload-section");
     const addThoughtBtn = document.getElementById("add-thought-btn");
     const closeBtn = document.querySelector(".close-btn");
+    const dragHandle = document.querySelector("#upload-header");
+    const resizeHandle = document.querySelector(".resize-handle");
 
     if (title) title.textContent = categoryName;
     if (content) content.innerHTML = `<p>Welcome to the ${categoryName} category. Here you can explore and share amazing ideas.</p>`;
@@ -62,8 +73,58 @@ document.addEventListener("DOMContentLoaded", () => {
             if (uploadSection) uploadSection.style.display = "none";
         });
     }
+    
+    // Drag functionality
+    if (dragHandle) {
+        dragHandle.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          isDragging = true;
+          offsetX = e.clientX - uploadSection.offsetLeft;
+          offsetY = e.clientY - uploadSection.offsetTop;
+          uploadSection.style.cursor = "grabbing";
+        });
+    }
 
-    const postBtn = document.querySelector('button[onclick="addEntry()"]');
+    // Resize functionality
+    if (resizeHandle) {
+        resizeHandle.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          isResizing = true;
+          e.stopPropagation();
+          initialWidth = uploadSection.offsetWidth;
+          initialHeight = uploadSection.offsetHeight;
+          initialX = e.clientX;
+          initialY = e.clientY;
+        });
+    }
+
+    document.addEventListener("mousemove", (e) => {
+      if (isDragging) {
+        uploadSection.style.left = (e.clientX - offsetX) + "px";
+        uploadSection.style.top = (e.clientY - offsetY) + "px";
+      }
+      if (isResizing) {
+        const deltaX = e.clientX - initialX;
+        const deltaY = e.clientY - initialY;
+        const newWidth = initialWidth + deltaX;
+        const newHeight = initialHeight + deltaY;
+        if (newWidth >= MIN_WIDTH) {
+          uploadSection.style.width = newWidth + "px";
+        }
+        if (newHeight >= MIN_HEIGHT) {
+          uploadSection.style.height = newHeight + "px";
+        }
+      }
+    });
+
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+      isResizing = false;
+      if (uploadSection) uploadSection.style.cursor = "default";
+    });
+
+    // Post entry button
+    const postBtn = document.getElementById("post-entry-btn");
     if (postBtn) {
         postBtn.addEventListener('click', addEntry);
     }
