@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thoughts Archive</title>
   <link rel="stylesheet" href="thoughtsarchive.css">
 </head>
@@ -11,12 +12,30 @@
   </header>
 
   <main>
-    <section id="categories">
-      <h2>Categories</h2>
-      <ul>
-        <li><a href="categorypage.html?name=The%20Clap%20of%20Worlds">The Clap of Worlds</a></li>
-        <li><a href="categorypage.html?name=The%20Last%20Dawn">The Last Dawn</a></li>
-      </ul>
+    <section id="new-thought">
+      <h2>Share a Thought</h2>
+
+      <!-- User Profile Info -->
+      <input type="text" id="username" placeholder="Your name">
+      <input type="file" id="userpic" accept="image/*">
+
+      <!-- Rich Editor Toolbar -->
+      <div class="toolbar">
+        <button onclick="formatText('bold')"><b>B</b></button>
+        <button onclick="formatText('italic')"><i>I</i></button>
+        <button onclick="formatText('underline')"><u>U</u></button>
+        <button onclick="formatText('insertUnorderedList')">• List</button>
+      </div>
+
+      <input type="text" id="thought-title" placeholder="Title">
+      <div id="thought-text" contenteditable="true" class="rich-editor"></div>
+
+      <button onclick="addThought()">Post</button>
+    </section>
+
+    <section id="thoughts">
+      <h2>All Thoughts</h2>
+      <div id="thought-list"></div>
     </section>
   </main>
 
