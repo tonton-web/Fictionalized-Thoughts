@@ -1,63 +1,124 @@
-// Select elements
-const entryTitle = document.getElementById("entry-title");
-const entryText = document.getElementById("entry-text");
-const postButton = document.getElementById("post-button");
-const entryList = document.getElementById("entry-list");
+// Thoughts Archive Script
 
-// Default profile info (later we can make this dynamic per user)
-const defaultProfile = {
-  name: "Guest User",
-  avatar: "https://via.placeholder.com/40" // placeholder profile image
-};
+document.addEventListener("DOMContentLoaded", () => {
+    const addThoughtBtn = document.getElementById("add-thought-btn");
+    const uploadContainer = document.getElementById("upload-container");
+    const closeBtn = document.querySelector(".close-btn");
+    const postEntryBtn = document.getElementById("post-entry-btn");
+    const archiveContainer = document.getElementById("archive-container");
+    const sortBtn = document.getElementById("sort-btn");
+    const sortDropdown = document.getElementById("sort-dropdown");
 
-// Handle post button click
-postButton.addEventListener("click", () => {
-  const title = entryTitle.value.trim();
-  const text = entryText.innerHTML.trim(); // capture HTML for rich text
-
-  if (!title && !text) return; // don't post empty entries
-
-  displayEntry(defaultProfile, title, text);
-
-  // Clear inputs
-  entryTitle.value = "";
-  entryText.innerHTML = "";
-});
-
-// Display a new entry
-function displayEntry(profile, title, text) {
-  const entryDiv = document.createElement("div");
-  entryDiv.classList.add("entry");
-
-  // Collapsible logic
-  const contentId = "content-" + Date.now();
-
-  entryDiv.innerHTML = `
-    <div class="entry-header">
-      <img src="${profile.avatar}" class="avatar" alt="Profile">
-      <div>
-        <h4 class="entry-name">${profile.name}</h4>
-        <h5 class="entry-title">${title}</h5>
-      </div>
-    </div>
-    <div class="entry-body collapsed" id="${contentId}">
-      ${text}
-    </div>
-    <button class="toggle-btn" data-target="${contentId}">Show more</button>
-  `;
-
-  entryList.prepend(entryDiv);
-
-  // Add toggle functionality
-  const toggleBtn = entryDiv.querySelector(".toggle-btn");
-  toggleBtn.addEventListener("click", () => {
-    const body = document.getElementById(contentId);
-    if (body.classList.contains("collapsed")) {
-      body.classList.remove("collapsed");
-      toggleBtn.textContent = "Show less";
-    } else {
-      body.classList.add("collapsed");
-      toggleBtn.textContent = "Show more";
+    // Ensure modal stays hidden on page load
+    if (uploadContainer) {
+        uploadContainer.style.display = "none";
     }
-  });
-}
+
+    // Toggle modal open
+    if (addThoughtBtn) {
+        addThoughtBtn.addEventListener("click", () => {
+            uploadContainer.style.display = "flex";
+        });
+    }
+
+    // Close modal
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            uploadContainer.style.display = "none";
+        });
+    }
+
+    // Post a new thought
+    if (postEntryBtn) {
+        postEntryBtn.addEventListener("click", () => {
+            const title = document.getElementById("thought-title").value.trim();
+            const content = document.getElementById("thought-content").innerHTML.trim();
+
+            if (title && content) {
+                const entry = document.createElement("div");
+                entry.classList.add("thought-entry");
+
+                entry.innerHTML = `
+                    <h3>${title}</h3>
+                    <p>${content}</p>
+                    <small>${new Date().toLocaleString()}</small>
+                `;
+
+                archiveContainer.prepend(entry);
+
+                // Reset inputs
+                document.getElementById("thought-title").value = "";
+                document.getElementById("thought-content").innerHTML = "";
+
+                // Hide modal after posting
+                uploadContainer.style.display = "none";
+            } else {
+                alert("Please enter both a title and content.");
+            }
+        });
+    }
+
+    // Sorting dropdown toggle
+    if (sortBtn) {
+        sortBtn.addEventListener("click", () => {
+            sortDropdown.style.display = sortDropdown.style.display === "block" ? "none" : "block";
+        });
+    }
+
+    // Hide sort dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+        if (!sortBtn.contains(e.target) && !sortDropdown.contains(e.target)) {
+            sortDropdown.style.display = "none";
+        }
+    });
+
+    // Sorting functionality
+    if (sortDropdown) {
+        sortDropdown.addEventListener("click", (e) => {
+            if (e.target.tagName === "A") {
+                const sortType = e.target.getAttribute("data-sort");
+                const entries = Array.from(archiveContainer.getElementsByClassName("thought-entry"));
+
+                entries.sort((a, b) => {
+                    const aDate = new Date(a.querySelector("small").textContent);
+                    const bDate = new Date(b.querySelector("small").textContent);
+
+                    if (sortType === "newest") {
+                        return bDate - aDate;
+                    } else if (sortType === "oldest") {
+                        return aDate - bDate;
+                    }
+                });
+
+                // Re-append sorted entries
+                archiveContainer.innerHTML = "";
+                entries.forEach(entry => archiveContainer.appendChild(entry));
+            }
+        });
+    }
+
+    // Resize modal functionality
+    const resizeHandle = document.querySelector(".resize-handle");
+    if (resizeHandle && uploadContainer) {
+        let isResizing = false;
+
+        resizeHandle.addEventListener("mousedown", (e) => {
+            isResizing = true;
+            document.body.style.userSelect = "none"; // Prevent text highlighting
+        });
+
+        window.addEventListener("mousemove", (e) => {
+            if (isResizing) {
+                const newHeight = e.clientY - uploadContainer.getBoundingClientRect().top;
+                if (newHeight > 200 && newHeight < window.innerHeight - 50) {
+                    uploadContainer.style.height = `${newHeight}px`;
+                }
+            }
+        });
+
+        window.addEventListener("mouseup", () => {
+            isResizing = false;
+            document.body.style.userSelect = ""; // Reset text selection
+        });
+    }
+});
