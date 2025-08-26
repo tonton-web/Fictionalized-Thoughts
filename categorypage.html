@@ -3,32 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Category Page</title>
+    <title>Thoughts Archive - Category</title>
+    <link rel="stylesheet" href="thoughtsarchive.css">
     <link rel="stylesheet" href="categorystyle.css">
 </head>
 <body>
     <header>
-        <h1>Category Page</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="categorypage.html">Categories</a>
-        </nav>
+        <h1>Fictionalized Thoughts</h1>
+        <p>Explore and Share Amazing Ideas</p>
     </header>
 
-    <main>
-        <section id="category-list">
-            <h2>Categories</h2>
-            <div class="category-grid">
-                <a href="#" class="category-card">Personal</a>
-                <a href="#" class="category-card">Work</a>
-                <a href="#" class="category-card">Ideas</a>
-                <a href="#" class="category-card">Archive</a>
+    <main id="category-page">
+        <div class="header-container">
+            <h2 id="category-title">Science</h2>
+            <div class="sort-container">
+                <button id="sort-btn">Sort By: Newest</button>
+                <div id="sort-dropdown" class="sort-dropdown">
+                    <a href="#" class="sort-option" data-sort-by="newest">Newest First</a>
+                    <a href="#" class="sort-option" data-sort-by="oldest">Oldest First</a>
+                </div>
             </div>
-        </section>
+        </div>
+        
+        <p id="category-content">Welcome to the <span id="category-name-text"></span> category. Here you can explore and share amazing ideas.</p>
+        
+        <div id="entry-list"></div>
+
+        <div id="upload-section" class="upload-container">
+            <div class="upload-header" id="upload-header">
+                <h3>Add a New Thought</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="upload-fields">
+                <input type="text" id="entry-title" placeholder="Enter title">
+                <div id="entry-text" contenteditable="true" class="rich-editor" placeholder="Enter your thought here"></div>
+                <button id="post-entry-btn">Post Entry</button>
+            </div>
+            <div class="resize-handle"></div>
+        </div>
+        
+        <a href="index.html" class="back-btn">Back to Homepage</a>
+        <button id="add-thought-btn">+</button>
     </main>
 
     <footer>
-        <p>&copy; 2025 Thoughts Archive</p>
+        <p>&copy; 2025 The Thought Archive</p>
     </footer>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="thoughtsarchive.js"></script>
 </body>
 </html>
+
