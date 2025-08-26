@@ -200,13 +200,13 @@ async function addEntry() {
   if (uploadSection) uploadSection.style.display = "none";
 }
 
-async function deleteEntry(categoryName, entryTitle, entryText) {
+async function deleteEntry(id) {
   if (confirm("Are you sure you want to delete this thought?")) {
     const { error } = await supabaseClient
       .from('thoughts')
       .delete()
       .eq('category', categoryName)
-      .eq('title', entryTitle);
+      .eq('id', id);
 
     if (error) {
       console.error('Error deleting entry:', error);
@@ -218,7 +218,7 @@ async function deleteEntry(categoryName, entryTitle, entryText) {
   }
 }
 
-function displayEntry(title, text) {
+function displayEntry(title, text, id) {
   const entryList = document.getElementById("entry-list");
   if (!entryList) return;
 
@@ -248,7 +248,7 @@ function displayEntry(title, text) {
   deleteBtn.addEventListener("click", () => {
     const params = new URLSearchParams(window.location.search);
     const categoryName = params.get("name");
-    deleteEntry(categoryName, title, text);
+    deleteEntry(id);
   });
   
   const buttonContainer = document.createElement("div");
@@ -260,4 +260,5 @@ function displayEntry(title, text) {
 
   entryList.prepend(entryDiv);
 }
+
 
