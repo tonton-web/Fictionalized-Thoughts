@@ -1,93 +1,63 @@
-// Handles category navigation
-function openCategory(name) {
-  window.location.href = `categorypage.html?name=${encodeURIComponent(name)}`;
-}
+// Select elements
+const entryTitle = document.getElementById("entry-title");
+const entryText = document.getElementById("entry-text");
+const postButton = document.getElementById("post-button");
+const entryList = document.getElementById("entry-list");
 
-// Code for category page content
-document.addEventListener("DOMContentLoaded", () => {
-  const params = new URLSearchParams(window.location.search);
-  const categoryName = params.get("name");
+// Default profile info (later we can make this dynamic per user)
+const defaultProfile = {
+  name: "Guest User",
+  avatar: "https://via.placeholder.com/40" // placeholder profile image
+};
 
-  if (categoryName) {
-    const title = document.getElementById("category-title");
-    const content = document.getElementById("category-content");
-    const entryList = document.getElementById("entry-list");
+// Handle post button click
+postButton.addEventListener("click", () => {
+  const title = entryTitle.value.trim();
+  const text = entryText.innerHTML.trim(); // capture HTML for rich text
 
-    if (title) title.textContent = categoryName;
-    if (content) content.innerHTML = `<p>Welcome to the ${categoryName} category. Share your thoughts!</p>`;
+  if (!title && !text) return; // don't post empty entries
 
-    // Load saved entries
-    const savedEntries = JSON.parse(localStorage.getItem(categoryName)) || [];
-    savedEntries.forEach(entry => {
-      displayEntry(entry.title, entry.text, entry.user, entry.avatar);
-    });
-  }
+  displayEntry(defaultProfile, title, text);
+
+  // Clear inputs
+  entryTitle.value = "";
+  entryText.innerHTML = "";
 });
 
-// Add new entry
-function addEntry() {
-  const params = new URLSearchParams(window.location.search);
-  const categoryName = params.get("name");
-
-  const titleInput = document.getElementById("entry-title");
-  const textInput = document.getElementById("entry-text");
-  const userInput = document.getElementById("entry-user");
-  const avatarInput = document.getElementById("entry-avatar");
-
-  const entryTitle = titleInput.value.trim();
-  const entryText = textInput.innerHTML.trim(); // capture HTML for formatting
-  const entryUser = userInput.value.trim() || "Anonymous";
-  const entryAvatar = avatarInput.value.trim() || "https://via.placeholder.com/40";
-
-  if (!entryTitle || !entryText) {
-    alert("Please enter both a title and content.");
-    return;
-  }
-
-  const newEntry = { title: entryTitle, text: entryText, user: entryUser, avatar: entryAvatar };
-  const savedEntries = JSON.parse(localStorage.getItem(categoryName)) || [];
-  savedEntries.push(newEntry);
-  localStorage.setItem(categoryName, JSON.stringify(savedEntries));
-
-  displayEntry(entryTitle, entryText, entryUser, entryAvatar);
-
-  titleInput.value = "";
-  textInput.innerHTML = "";
-  userInput.value = "";
-  avatarInput.value = "";
-}
-
-// Display entry
-function displayEntry(title, text, user, avatar) {
-  const entryList = document.getElementById("entry-list");
+// Display a new entry
+function displayEntry(profile, title, text) {
   const entryDiv = document.createElement("div");
   entryDiv.classList.add("entry");
 
-  // Collapsible post
-  const previewLength = 200;
-  const isLong = text.length > previewLength;
-  const previewText = isLong ? text.substring(0, previewLength) + "..." : text;
+  // Collapsible logic
+  const contentId = "content-" + Date.now();
 
   entryDiv.innerHTML = `
     <div class="entry-header">
-      <img src="${avatar}" alt="avatar" class="avatar">
-      <span class="user-name">${user}</span>
+      <img src="${profile.avatar}" class="avatar" alt="Profile">
+      <div>
+        <h4 class="entry-name">${profile.name}</h4>
+        <h5 class="entry-title">${title}</h5>
+      </div>
     </div>
-    <h4>${title}</h4>
-    <p class="entry-text">${previewText}</p>
-    ${isLong ? '<button class="toggle-btn">Read More</button>' : ""}
+    <div class="entry-body collapsed" id="${contentId}">
+      ${text}
+    </div>
+    <button class="toggle-btn" data-target="${contentId}">Show more</button>
   `;
 
-  if (isLong) {
-    const btn = entryDiv.querySelector(".toggle-btn");
-    const textEl = entryDiv.querySelector(".entry-text");
-    let expanded = false;
-    btn.addEventListener("click", () => {
-      expanded = !expanded;
-      textEl.innerHTML = expanded ? text : previewText;
-      btn.textContent = expanded ? "Show Less" : "Read More";
-    });
-  }
-
   entryList.prepend(entryDiv);
+
+  // Add toggle functionality
+  const toggleBtn = entryDiv.querySelector(".toggle-btn");
+  toggleBtn.addEventListener("click", () => {
+    const body = document.getElementById(contentId);
+    if (body.classList.contains("collapsed")) {
+      body.classList.remove("collapsed");
+      toggleBtn.textContent = "Show less";
+    } else {
+      body.classList.add("collapsed");
+      toggleBtn.textContent = "Show more";
+    }
+  });
 }
