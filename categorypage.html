@@ -2,32 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Category Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categories</title>
   <link rel="stylesheet" href="categorystyle.css">
 </head>
 <body>
   <header>
-    <h1 id="category-title"></h1>
+    <h1>Categories</h1>
+    <nav>
+      <a href="index.html">Home</a>
+    </nav>
   </header>
 
   <main>
-    <div id="category-content"></div>
-
-    <section id="new-entry">
-      <h3>Write a new thought</h3>
-      <input type="text" id="entry-user" placeholder="Your name">
-      <input type="text" id="entry-avatar" placeholder="Avatar URL (optional)">
-      <input type="text" id="entry-title" placeholder="Title" style="min-height:60px;">
-      <div id="entry-text" contenteditable="true" class="rich-editor" placeholder="Write your thought here..."></div>
-      <button onclick="addEntry()">Post</button>
-    </section>
-
-    <section id="entries">
-      <h3>Posts</h3>
-      <div id="entry-list"></div>
+    <section id="categories">
+      <h2>Browse Categories</h2>
+      <ul>
+        <li><a href="#">The Clap of Worlds</a></li>
+        <li><a href="#">The Last Dawn</a></li>
+        <!-- Add more categories here -->
+      </ul>
     </section>
   </main>
-
-  <script src="thoughtsarchive.js"></script>
 </body>
 </html>
