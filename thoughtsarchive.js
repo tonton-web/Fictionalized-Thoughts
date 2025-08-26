@@ -166,38 +166,52 @@ if (textInput) {
 });
 
 async function addEntry() {
-  const params = new URLSearchParams(window.location.search);
-  const categoryName = params.get("name");
-  const titleInput = document.getElementById("entry-title");
-  const textInput = document.getElementById("entry-text");
-  const uploadSection = document.getElementById("upload-section");
+    const { data: { user } } = await supabaseClient.auth.getUser();
 
-  const entryTitle = titleInput.value.trim();
-  const entryText = textInput.innerHTML.trim();
+    // Check if the user is logged in
+    if (!user) {
+        alert("You must be logged in to post a thought.");
+        return;
+    }
 
-  if (!entryTitle || !entryText) {
-    alert("Please enter both a title and content.");
-    return;
-  }
-  
-  const { data, error } = await supabaseClient
-    .from('thoughts')
-    .insert([
-      { category: categoryName, title: entryTitle, text: entryText },
-    ])
-    .select();
+    const params = new URLSearchParams(window.location.search);
+    const categoryName = params.get("name");
+    const titleInput = document.getElementById("entry-title");
+    const textInput = document.getElementById("entry-text");
+    const uploadSection = document.getElementById("upload-section");
 
-  if (error) {
-    console.error('Error adding entry:', error);
-    alert('There was an error saving your thought. Please try again.');
-    return;
-  }
+    const entryTitle = titleInput.value.trim();
+    const entryText = textInput.innerHTML.trim();
 
-  displayEntries(categoryName, currentSortBy);
+    if (!entryTitle || !entryText) {
+        alert("Please enter both a title and content.");
+        return;
+    }
+    
+    // Include the user's ID in the insert query
+    const { data, error } = await supabaseClient
+        .from('thoughts')
+        .insert([
+            {
+                category: categoryName,
+                title: entryTitle,
+                text: entryText,
+                user_id: user.id  // This is the new, crucial line
+            },
+        ])
+        .select();
 
-  titleInput.value = "";
-  textInput.innerHTML = "";
-  if (uploadSection) uploadSection.style.display = "none";
+    if (error) {
+        console.error('Error adding entry:', error);
+        alert('There was an error saving your thought. Please try again.');
+        return;
+    }
+
+    displayEntries(categoryName, currentSortBy);
+
+    titleInput.value = "";
+    textInput.innerHTML = "";
+    if (uploadSection) uploadSection.style.display = "none";
 }
 
 async function deleteEntry(id) {
@@ -260,6 +274,7 @@ function displayEntry(title, text, id) {
 
   entryList.prepend(entryDiv);
 }
+
 
 
 
