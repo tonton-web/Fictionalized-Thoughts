@@ -276,6 +276,63 @@ function displayEntry(title, text, id) {
 }
 
 
+// Function to update UI based on user login state
+async function updateUI() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    const authUI = document.getElementById('auth-ui');
+    const logoutUI = document.getElementById('logout-ui');
+    const userEmailSpan = document.getElementById('user-email');
 
+    if (user) {
+        // User is logged in
+        authUI.style.display = 'none';
+        logoutUI.style.display = 'flex';
+        userEmailSpan.textContent = `Logged in as: ${user.email}`;
+    } else {
+        // User is not logged in
+        authUI.style.display = 'flex';
+        logoutUI.style.display = 'none';
+    }
+}
 
+// Handle login
+document.getElementById('login-btn')?.addEventListener('click', async () => {
+    const email = document.getElementById('email-input').value;
+    const password = document.getElementById('password-input').value;
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) {
+        alert(error.message);
+    } else {
+        updateUI();
+    }
+});
 
+// Handle sign up
+document.getElementById('signup-btn')?.addEventListener('click', async () => {
+    const email = document.getElementById('email-input').value;
+    const password = document.getElementById('password-input').value;
+    const { error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) {
+        alert(error.message);
+    } else {
+        alert('Check your email to confirm your account!');
+    }
+});
+
+// Handle logout
+document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) {
+        alert(error.message);
+    } else {
+        updateUI();
+    }
+});
+
+// Listen for auth state changes and update UI accordingly
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    updateUI();
+});
+
+// Initial UI update on page load
+updateUI();
