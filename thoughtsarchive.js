@@ -73,7 +73,6 @@ if (textInput) {
         document.execCommand("insertText", false, text);
     });
 }
-    }
 
     if (addThoughtBtn) {
         addThoughtBtn.addEventListener("click", () => {
@@ -261,6 +260,7 @@ function displayEntry(title, text, id) {
 
   entryList.prepend(entryDiv);
 }
+
 
 
 
