@@ -8,37 +8,33 @@
 </head>
 <body>
   <header>
-    <h1>Thoughts Archive</h1>
+    <h1>Fictionalized Thoughts</h1>
+    <p>Explore and Share Amazing Ideas</p>
   </header>
 
   <main>
-    <section id="new-thought">
-      <h2>Share a Thought</h2>
-
-      <!-- User Profile Info -->
-      <input type="text" id="username" placeholder="Your name">
-      <input type="file" id="userpic" accept="image/*">
-
-      <!-- Rich Editor Toolbar -->
-      <div class="toolbar">
-        <button onclick="formatText('bold')"><b>B</b></button>
-        <button onclick="formatText('italic')"><i>I</i></button>
-        <button onclick="formatText('underline')"><u>U</u></button>
-        <button onclick="formatText('insertUnorderedList')">• List</button>
+    <div class="grid-container">
+      <div class="category" onclick="window.location.href='categorypage.html?category=science'">
+        <img src="images/science.png" alt="Science">
+        <span>Science</span>
       </div>
-
-      <input type="text" id="thought-title" placeholder="Title">
-      <div id="thought-text" contenteditable="true" class="rich-editor"></div>
-
-      <button onclick="addThought()">Post</button>
-    </section>
-
-    <section id="thoughts">
-      <h2>All Thoughts</h2>
-      <div id="thought-list"></div>
-    </section>
+      <div class="category" onclick="window.location.href='categorypage.html?category=philosophy'">
+        <img src="images/philosophy.png" alt="Philosophy">
+        <span>Philosophy</span>
+      </div>
+      <div class="category" onclick="window.location.href='categorypage.html?category=technology'">
+        <img src="images/technology.png" alt="Technology">
+        <span>Technology</span>
+      </div>
+      <div class="category" onclick="window.location.href='categorypage.html?category=art'">
+        <img src="images/art.png" alt="Art">
+        <span>Art</span>
+      </div>
+    </div>
   </main>
 
-  <script src="thoughtsarchive.js"></script>
+  <footer>
+    <p>&copy; 2025 The Thought Archive</p>
+  </footer>
 </body>
 </html>
