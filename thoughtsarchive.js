@@ -66,12 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
     displayEntries(categoryName, currentSortBy);
     
     // Paste functionality
-    if (textInput) {
-        textInput.addEventListener("paste", (event) => {
-            event.preventDefault();
-            const text = event.clipboardData.getData("text/plain");
-            document.execCommand("insertHTML", false, text);
-        });
+if (textInput) {
+    textInput.addEventListener("paste", (event) => {
+        event.preventDefault();
+        const text = event.clipboardData.getData("text/plain");
+        document.execCommand("insertText", false, text);
+    });
+}
     }
 
     if (addThoughtBtn) {
@@ -260,5 +261,6 @@ function displayEntry(title, text, id) {
 
   entryList.prepend(entryDiv);
 }
+
 
 
